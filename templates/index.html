@@ -86,17 +86,6 @@
         </div>
 
         <div class="result-card">
-          <h2 class="section-label">Confidence score</h2>
-          <p
-            class="trust-score {% if trust_score > 70 %}trust-score--high{% elif trust_score >= 40 %}trust-score--mid{% else %}trust-score--low{% endif %}"
-          >
-            <span class="trust-score__value">{{ trust_score }}</span
-            ><span class="trust-score__suffix">/100</span>
-          </p>
-          <p class="trust-score__hint">Based on what real buyers across the internet are saying</p>
-        </div>
-
-        <div class="result-card">
           <h2 class="section-label">What people are saying</h2>
           <div class="prose">{{ summary }}</div>
         </div>

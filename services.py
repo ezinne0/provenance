@@ -137,7 +137,7 @@ def _normalize_keyword_list(raw: Any) -> list[str]:
 def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any]:
     """
     Send aggregated review text to Claude and return a dict with ``summary``,
-    ``durability``, ``keywords`` (5 items), and ``trust_score`` (0–100).
+    ``durability``, and ``keywords`` (5 items).
     """
     api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
     if not api_key:
@@ -155,13 +155,12 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
     system = (
         "You synthesize shopper-relevant insights from aggregated web search snippets about a product. "
         "Respond with a single JSON object only — no markdown, no code fences, no explanation or text outside the JSON. "
-        "Exactly these four keys:\n"
+        "Exactly these three keys:\n"
         '- "summary": string, 2-3 sentences on overall sentiment from the review text.\n'
         '- "durability": string, 1-2 sentences on how the product holds up over time (wear, materials, construction).\n'
         '- "keywords": array of exactly 5 strings — concrete descriptor words people use (e.g. soft, creasing, bulky). '
         "No common stop words (the, and, very, good, bad as filler alone).\n"
-        '- "trust_score": integer from 0 to 100 reflecting how much signal is in the text (not a product guarantee).\n'
-        "If evidence is thin, say so in summary and use a lower trust_score."
+        "If evidence is thin, say so in summary."
     )
     user = (
         f"Product name: {pn}\n"
@@ -184,18 +183,10 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
 
     data = _parse_assistant_json(text)
 
-    ts = data.get("trust_score", 0)
-    try:
-        trust_int = int(ts)
-    except (TypeError, ValueError):
-        trust_int = 0
-    trust_int = max(0, min(100, trust_int))
-
     return {
         "summary": str(data.get("summary", "")).strip(),
         "durability": str(data.get("durability", "")).strip(),
         "keywords": _normalize_keyword_list(data.get("keywords")),
-        "trust_score": trust_int,
     }
 
 

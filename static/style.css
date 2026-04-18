@@ -17,9 +17,6 @@
   --card-border: rgba(255, 255, 255, 0.15);
   --input-bg: rgba(5, 8, 40, 0.88);
   --btn-hover: #8b9fe8;
-  --trust-high: #5ee9a4;
-  --trust-mid: #f5d565;
-  --trust-low: #f87171;
 }
 
 body.is-loading {
@@ -284,50 +281,6 @@ body {
 .product-meta__row dd {
   margin: 0;
   color: var(--color-text);
-}
-
-/* —— Trust score —— */
-.trust-score {
-  margin: 0.15rem 0 0;
-  line-height: 1;
-}
-
-.trust-score__value {
-  font-family: var(--font-serif);
-  font-size: clamp(3.5rem, 14vw, 5.25rem);
-  font-weight: 700;
-  font-style: normal;
-  letter-spacing: -0.02em;
-}
-
-.trust-score__suffix {
-  font-family: var(--font-sans);
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  margin-left: 0.12em;
-}
-
-.trust-score--high .trust-score__value {
-  color: var(--trust-high);
-}
-
-.trust-score--mid .trust-score__value {
-  color: var(--trust-mid);
-}
-
-.trust-score--low .trust-score__value {
-  color: var(--trust-low);
-}
-
-.trust-score__hint {
-  margin: 1rem 0 0;
-  max-width: 32ch;
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 400;
-  line-height: 1.55;
-  color: var(--color-text-soft);
 }
 
 /* —— Prose —— */
