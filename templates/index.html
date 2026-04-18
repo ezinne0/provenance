@@ -8,18 +8,55 @@
   </head>
   <body>
     <main>
-      <h1>Enter a URL</h1>
-      <form method="post" action="{{ url_for('index') }}">
+      <h1>Provenance</h1>
+      <p class="tagline">Paste a product URL for a quick read on sentiment and durability.</p>
+
+      {% if error_message %}
+      <p class="message message--error" role="alert">{{ error_message }}</p>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('analyze') }}">
         <input
           type="url"
           name="url"
           id="url"
-          placeholder="https://example.com"
+          placeholder="https://example.com/product/..."
           autocomplete="url"
+          value="{{ submitted_url or '' }}"
           required
         />
-        <button type="submit">Submit</button>
+        <button type="submit">Analyze</button>
       </form>
+
+      {% if summary is defined %}
+      <section class="results" aria-label="Analysis results">
+        <h2>Product</h2>
+        <dl class="meta">
+          <dt>Name</dt>
+          <dd>{{ product_name or "—" }}</dd>
+          <dt>Brand</dt>
+          <dd>{{ brand or "—" }}</dd>
+          <dt>Category</dt>
+          <dd>{{ category or "—" }}</dd>
+        </dl>
+
+        <h2>Trust score</h2>
+        <p class="trust-score">{{ trust_score }}<span class="trust-max">/100</span></p>
+
+        <h2>Sentiment summary</h2>
+        <p class="prose">{{ summary }}</p>
+
+        <h2>Durability</h2>
+        <p class="prose">{{ durability }}</p>
+
+        <h2>Keywords</h2>
+        <ul class="keywords">
+          {% for kw in keywords %}
+          <li>{{ kw }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
     </main>
   </body>
 </html>

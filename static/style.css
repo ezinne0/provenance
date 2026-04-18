@@ -9,14 +9,16 @@ body {
   min-height: 100vh;
   font-family: system-ui, sans-serif;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding: 2rem 1rem;
   background: #f5f5f5;
   color: #1a1a1a;
+  line-height: 1.5;
 }
 
 main {
-  width: min(100% - 2rem, 28rem);
+  width: min(100% - 2rem, 36rem);
   padding: 2rem;
   background: #fff;
   border-radius: 8px;
@@ -24,9 +26,41 @@ main {
 }
 
 h1 {
-  margin: 0 0 1.25rem;
-  font-size: 1.25rem;
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
   font-weight: 600;
+}
+
+.tagline {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+h2 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #444;
+}
+
+h2:first-of-type {
+  margin-top: 1.75rem;
+}
+
+.message {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.message--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
 }
 
 form {
@@ -57,4 +91,56 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background: #1d4ed8;
+}
+
+.results {
+  border-top: 1px solid #eee;
+  margin-top: 1.5rem;
+  padding-top: 0.25rem;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.meta dt {
+  margin: 0;
+  color: #666;
+  font-weight: 500;
+}
+
+.meta dd {
+  margin: 0;
+}
+
+.trust-score {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1e3a8a;
+}
+
+.trust-max {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.prose {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.keywords {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.keywords li {
+  margin-bottom: 0.25rem;
 }
