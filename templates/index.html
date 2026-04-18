@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Provenance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main>
+      <h1>Enter a URL</h1>
+      <form method="post" action="{{ url_for('index') }}">
+        <input
+          type="url"
+          name="url"
+          id="url"
+          placeholder="https://example.com"
+          autocomplete="url"
+          required
+        />
+        <button type="submit">Submit</button>
+      </form>
+    </main>
+  </body>
+</html>
