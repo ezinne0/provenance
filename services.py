@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Any
 
 import requests
@@ -16,6 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 _DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
+_MAX_REVIEW_TEXT_CHARS = 100_000
 
 # Helper function to parse the assistant's JSON response
 def _parse_assistant_json(text: str) -> dict[str, Any]:
@@ -114,8 +116,87 @@ def get_reviews(product_name: str, brand: str) -> str:
 
     return "\n".join(snippets)
 
+# Helper function to normalize the keyword list
+def _normalize_keyword_list(raw: Any) -> list[str]:
+    if not isinstance(raw, list):
+        return []
+    out: list[str] = []
+    for x in raw:
+        s = str(x).strip().lower()
+        s = re.sub(r"[^a-z0-9\-]+", "", s)
+        if s and s not in out:
+            out.append(s)
+        if len(out) >= 5:
+            break
+    while len(out) < 5:
+        out.append("unknown")
+    return out[:5]
 
-# Testing get_product_name function with a list of URLs
+# Helper function to synthesize the review text
+def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any]:
+    """
+    Send aggregated review text to Claude and return a dict with ``summary``,
+    ``durability``, ``keywords`` (5 items), and ``trust_score`` (0–100).
+    """
+    api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY is not set.")
+
+    rt = (review_text or "").strip()
+    if len(rt) > _MAX_REVIEW_TEXT_CHARS:
+        rt = rt[:_MAX_REVIEW_TEXT_CHARS]
+
+    pn = (product_name or "").strip()
+    br = (brand or "").strip()
+    model = (os.getenv("ANTHROPIC_MODEL") or _DEFAULT_MODEL).strip() or _DEFAULT_MODEL
+
+    client = Anthropic(api_key=api_key)
+    system = (
+        "You synthesize shopper-relevant insights from aggregated web search snippets about a product. "
+        "Respond with a single JSON object only — no markdown, no code fences, no explanation or text outside the JSON. "
+        "Exactly these four keys:\n"
+        '- "summary": string, 2-3 sentences on overall sentiment from the review text.\n'
+        '- "durability": string, 1-2 sentences on how the product holds up over time (wear, materials, construction).\n'
+        '- "keywords": array of exactly 5 strings — concrete descriptor words people use (e.g. soft, creasing, bulky). '
+        "No common stop words (the, and, very, good, bad as filler alone).\n"
+        '- "trust_score": integer from 0 to 100 reflecting how much signal is in the text (not a product guarantee).\n'
+        "If evidence is thin, say so in summary and use a lower trust_score."
+    )
+    user = (
+        f"Product name: {pn}\n"
+        f"Brand: {br}\n\n"
+        f"Review / search snippet text:\n{rt}"
+    )
+
+    msg = client.messages.create(
+        model=model,
+        max_tokens=2048,
+        system=system,
+        messages=[{"role": "user", "content": user}],
+    )
+    text = ""
+    for block in msg.content:
+        if hasattr(block, "text"):
+            text += block.text
+
+    data = _parse_assistant_json(text)
+
+    ts = data.get("trust_score", 0)
+    try:
+        trust_int = int(ts)
+    except (TypeError, ValueError):
+        trust_int = 0
+    trust_int = max(0, min(100, trust_int))
+
+    return {
+        "summary": str(data.get("summary", "")).strip(),
+        "durability": str(data.get("durability", "")).strip(),
+        "keywords": _normalize_keyword_list(data.get("keywords")),
+        "trust_score": trust_int,
+    }
+
+
+# Testing get_product_name() function with a list of URLs
 if __name__ == "__main__":
     urls = [
         "https://www.zara.com/us/en/regular-fit-textured-weave-suit-pT9960345005.html?v1=539928691",
@@ -125,17 +206,31 @@ if __name__ == "__main__":
     for url in urls:
         print(get_product_name(url))
 
-# Testing get_reviews function with a list of product names and brands
+# Testing get_reviews() function with a list of product names and brands
+# if __name__ == "__main__":
+#     product_names = [
+#         "Air Force 1",
+#         "Textured Weave Suit",
+#         "Levi's 80s Mom Shorts"
+#     ]
+#     brands = [
+#         "Nike",
+#         "Zara",
+#         "Levi's"
+#     ]
+#     for product_name, brand in zip(product_names, brands):
+#         print(get_reviews(product_name, brand))
+
+# Testing synthesize() function with a list of fake reviews
 if __name__ == "__main__":
-    product_names = [
-        "Air Force 1",
-        "Textured Weave Suit",
-        "Levi's 80s Mom Shorts"
-    ]
-    brands = [
-        "Nike",
-        "Zara",
-        "Levi's"
-    ]
-    for product_name, brand in zip(product_names, brands):
-        print(get_reviews(product_name, brand))
+    fake_reviews = """
+    The Nike Air Force 1 fits true to size but runs large. 
+    Creases badly after a few wears especially at the toe box.
+    Durable leather upper holds up well over time but the sole can yellow.
+    Comfortable for casual wear but not for long walks.
+    Bulky silhouette, iconic design, pairs well with everything.
+    Some users report the laces fray quickly.
+    Great value for the price, very versatile shoe.
+    """
+    result = synthesize(fake_reviews, "Air Force 1", "Nike")
+    print(result)
