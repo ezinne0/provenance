@@ -63,6 +63,7 @@ def get_product_name(url: str) -> dict[str, str]:
     msg = client.messages.create(
         model=model,
         max_tokens=1024,
+        temperature=0,
         system=system,
         messages=[{"role": "user", "content": user}],
     )
@@ -171,6 +172,8 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
     msg = client.messages.create(
         model=model,
         max_tokens=2048,
+        # set to 0 for deterministic output; tbd if im keeping this
+        temperature=0,
         system=system,
         messages=[{"role": "user", "content": user}],
     )

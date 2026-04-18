@@ -13,6 +13,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
   <body>
+    <div
+      id="loading-overlay"
+      class="loading-overlay"
+      hidden
+      role="status"
+      aria-live="polite"
+      aria-busy="false"
+      aria-label="Analyzing product"
+    >
+      <div class="loading-overlay__inner">
+        <p class="loading-overlay__title">Reading the room…</p>
+        <p class="loading-overlay__hint">Checking what people say across the web.</p>
+        <div class="loading-bar" aria-hidden="true">
+          <div class="loading-bar__fill"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="page">
       <header class="masthead">
         <h1 class="logo">Provenance</h1>
@@ -22,7 +40,6 @@
         <p class="masthead__lede">
           Paste any product URL. We’ll tell you what the internet actually thinks.
         </p>
-        <p class="masthead__strap">Informed purchase intelligence</p>
       </header>
 
       <section class="search-panel" aria-label="Analyze a product URL">
@@ -100,5 +117,29 @@
       </article>
       {% endif %}
     </div>
+
+    <script>
+      (function () {
+        var form = document.querySelector(".search-form");
+        var overlay = document.getElementById("loading-overlay");
+        if (!form || !overlay) return;
+
+        form.addEventListener("submit", function () {
+          if (!form.reportValidity()) return;
+
+          var fill = overlay.querySelector(".loading-bar__fill");
+          overlay.removeAttribute("hidden");
+          overlay.setAttribute("aria-busy", "true");
+          document.body.classList.add("is-loading");
+
+          fill.classList.remove("loading-bar__fill--animate");
+          void fill.offsetWidth;
+          fill.classList.add("loading-bar__fill--animate");
+
+          var btn = form.querySelector('button[type="submit"]');
+          if (btn) btn.disabled = true;
+        });
+      })();
+    </script>
   </body>
 </html>
