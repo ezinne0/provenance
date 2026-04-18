@@ -20,8 +20,7 @@
           social shopping for <span class="masthead__title-phia">Phia</span>
         </p>
         <p class="masthead__lede">
-          Paste a listing URL. We read public sentiment and durability signals — distilled for the
-          rack.
+          Paste any product URL. We’ll tell you what the internet actually thinks.
         </p>
         <p class="masthead__strap">Informed purchase intelligence</p>
       </header>
@@ -39,12 +38,12 @@
               type="url"
               name="url"
               id="url"
-              placeholder="Paste product URL"
+              placeholder="Drop a URL — any product, any store."
               autocomplete="url"
               value="{{ submitted_url or '' }}"
               required
             />
-            <button class="search-form__submit" type="submit">Analyze</button>
+            <button class="search-form__submit" type="submit">Read the room</button>
           </div>
         </form>
       </section>
@@ -52,7 +51,7 @@
       {% if summary is defined %}
       <article class="report" aria-label="Analysis results">
         <div class="result-card">
-          <h2 class="section-label">Identified product</h2>
+          <h2 class="section-label">You’re looking at</h2>
           <dl class="product-meta">
             <div class="product-meta__row">
               <dt>Name</dt>
@@ -77,21 +76,21 @@
             <span class="trust-score__value">{{ trust_score }}</span
             ><span class="trust-score__suffix">/100</span>
           </p>
-          <p class="trust-score__hint">Based on how much consistent signal appears in open-web mentions.</p>
+          <p class="trust-score__hint">Based on what real buyers across the internet are saying</p>
         </div>
 
         <div class="result-card">
-          <h2 class="section-label">Public sentiment</h2>
+          <h2 class="section-label">What people are saying</h2>
           <div class="prose">{{ summary }}</div>
         </div>
 
         <div class="result-card">
-          <h2 class="section-label">Durability &amp; wear</h2>
+          <h2 class="section-label">Does it last?</h2>
           <div class="prose">{{ durability }}</div>
         </div>
 
         <div class="result-card">
-          <h2 class="section-label">How people describe it</h2>
+          <h2 class="section-label">Words that keep coming up</h2>
           <ul class="keyword-tags" aria-label="Descriptive keywords">
             {% for kw in keywords %}
             <li class="keyword-tags__pill">{{ kw }}</li>
