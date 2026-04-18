@@ -4,59 +4,99 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Provenance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
   <body>
-    <main>
-      <h1>Provenance</h1>
-      <p class="tagline">Paste a product URL for a quick read on sentiment and durability.</p>
+    <div class="page">
+      <header class="masthead">
+        <h1 class="logo">Provenance</h1>
+        <p class="masthead__title">Informed purchase intelligence</p>
+        <p class="masthead__lede">
+          Paste a listing URL. We read public sentiment and durability signals — distilled for the
+          rack.
+        </p>
+      </header>
 
-      {% if error_message %}
-      <p class="message message--error" role="alert">{{ error_message }}</p>
-      {% endif %}
+      <section class="search-panel" aria-label="Analyze a product URL">
+        {% if error_message %}
+        <p class="banner banner--error" role="alert">{{ error_message }}</p>
+        {% endif %}
 
-      <form method="post" action="{{ url_for('analyze') }}">
-        <input
-          type="url"
-          name="url"
-          id="url"
-          placeholder="https://example.com/product/..."
-          autocomplete="url"
-          value="{{ submitted_url or '' }}"
-          required
-        />
-        <button type="submit">Analyze</button>
-      </form>
+        <form class="search-form" method="post" action="{{ url_for('analyze') }}">
+          <label class="visually-hidden" for="url">Product URL</label>
+          <div class="search-form__row">
+            <input
+              class="search-form__input"
+              type="url"
+              name="url"
+              id="url"
+              placeholder="Paste product URL"
+              autocomplete="url"
+              value="{{ submitted_url or '' }}"
+              required
+            />
+            <button class="search-form__submit" type="submit">Analyze</button>
+          </div>
+        </form>
+      </section>
 
       {% if summary is defined %}
-      <section class="results" aria-label="Analysis results">
-        <h2>Product</h2>
-        <dl class="meta">
-          <dt>Name</dt>
-          <dd>{{ product_name or "—" }}</dd>
-          <dt>Brand</dt>
-          <dd>{{ brand or "—" }}</dd>
-          <dt>Category</dt>
-          <dd>{{ category or "—" }}</dd>
-        </dl>
+      <article class="report" aria-label="Analysis results">
+        <div class="result-card">
+          <h2 class="section-label">Identified product</h2>
+          <dl class="product-meta">
+            <div class="product-meta__row">
+              <dt>Name</dt>
+              <dd>{{ product_name or "—" }}</dd>
+            </div>
+            <div class="product-meta__row">
+              <dt>Brand</dt>
+              <dd>{{ brand or "—" }}</dd>
+            </div>
+            <div class="product-meta__row">
+              <dt>Category</dt>
+              <dd>{{ category or "—" }}</dd>
+            </div>
+          </dl>
+        </div>
 
-        <h2>Trust score</h2>
-        <p class="trust-score">{{ trust_score }}<span class="trust-max">/100</span></p>
+        <div class="result-card">
+          <h2 class="section-label">Confidence score</h2>
+          <p
+            class="trust-score {% if trust_score > 70 %}trust-score--high{% elif trust_score >= 40 %}trust-score--mid{% else %}trust-score--low{% endif %}"
+          >
+            <span class="trust-score__value">{{ trust_score }}</span
+            ><span class="trust-score__suffix">/100</span>
+          </p>
+          <p class="trust-score__hint">Based on how much consistent signal appears in open-web mentions.</p>
+        </div>
 
-        <h2>Sentiment summary</h2>
-        <p class="prose">{{ summary }}</p>
+        <div class="result-card">
+          <h2 class="section-label">Public sentiment</h2>
+          <div class="prose">{{ summary }}</div>
+        </div>
 
-        <h2>Durability</h2>
-        <p class="prose">{{ durability }}</p>
+        <div class="result-card">
+          <h2 class="section-label">Durability &amp; wear</h2>
+          <div class="prose">{{ durability }}</div>
+        </div>
 
-        <h2>Keywords</h2>
-        <ul class="keywords">
-          {% for kw in keywords %}
-          <li>{{ kw }}</li>
-          {% endfor %}
-        </ul>
-      </section>
+        <div class="result-card">
+          <h2 class="section-label">How people describe it</h2>
+          <ul class="keyword-tags" aria-label="Descriptive keywords">
+            {% for kw in keywords %}
+            <li class="keyword-tags__pill">{{ kw }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </article>
       {% endif %}
-    </main>
+    </div>
   </body>
 </html>
