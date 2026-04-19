@@ -222,6 +222,40 @@ body {
   cursor: wait;
 }
 
+/* After results: compact URL row only (no extra chrome) */
+.search-panel--after-results {
+  padding: clamp(1rem, 4vw, 1.75rem) 0;
+}
+
+.search-form--compact .search-form__row {
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}
+
+.search-form--compact .search-form__input {
+  padding: 0.55rem 0.95rem;
+  font-size: 0.875rem;
+  border-radius: 14px;
+}
+
+.search-form--compact .search-form__submit {
+  padding: 0.55rem 1.15rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  border-radius: 14px;
+}
+
+@media (max-width: 32rem) {
+  .search-form--compact .search-form__row {
+    flex-wrap: wrap;
+  }
+
+  .search-form--compact .search-form__submit {
+    flex: 1 1 auto;
+    min-width: min(100%, 12rem);
+  }
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

@@ -42,11 +42,36 @@
         </p>
       </header>
 
-      <section class="search-panel" aria-label="Analyze a product URL">
+      <section
+        class="search-panel{% if summary is defined %} search-panel--after-results{% endif %}"
+        aria-label="Analyze a product URL"
+      >
         {% if error_message %}
         <p class="banner banner--error" role="alert">{{ error_message }}</p>
         {% endif %}
 
+        {% if summary is defined %}
+        <form
+          class="search-form search-form--compact"
+          method="post"
+          action="{{ url_for('analyze') }}"
+        >
+          <label class="visually-hidden" for="url-repeat">Product URL</label>
+          <div class="search-form__row">
+            <input
+              class="search-form__input"
+              type="url"
+              name="url"
+              id="url-repeat"
+              placeholder="Paste another product URL"
+              autocomplete="url"
+              value=""
+              required
+            />
+            <button class="search-form__submit" type="submit">Read the room</button>
+          </div>
+        </form>
+        {% else %}
         <form class="search-form" method="post" action="{{ url_for('analyze') }}">
           <label class="visually-hidden" for="url">Product URL</label>
           <div class="search-form__row">
@@ -63,6 +88,7 @@
             <button class="search-form__submit" type="submit">Read the room</button>
           </div>
         </form>
+        {% endif %}
       </section>
 
       {% if summary is defined %}
@@ -161,25 +187,28 @@
 
     <script>
       (function () {
-        var form = document.querySelector(".search-form");
         var overlay = document.getElementById("loading-overlay");
-        if (!form || !overlay) return;
 
-        form.addEventListener("submit", function () {
-          if (!form.reportValidity()) return;
+        function wireFormSubmit(form) {
+          if (!form || !overlay) return;
+          form.addEventListener("submit", function () {
+            if (!form.reportValidity()) return;
 
-          var fill = overlay.querySelector(".loading-bar__fill");
-          overlay.removeAttribute("hidden");
-          overlay.setAttribute("aria-busy", "true");
-          document.body.classList.add("is-loading");
+            var fill = overlay.querySelector(".loading-bar__fill");
+            overlay.removeAttribute("hidden");
+            overlay.setAttribute("aria-busy", "true");
+            document.body.classList.add("is-loading");
 
-          fill.classList.remove("loading-bar__fill--animate");
-          void fill.offsetWidth;
-          fill.classList.add("loading-bar__fill--animate");
+            fill.classList.remove("loading-bar__fill--animate");
+            void fill.offsetWidth;
+            fill.classList.add("loading-bar__fill--animate");
 
-          var btn = form.querySelector('button[type="submit"]');
-          if (btn) btn.disabled = true;
-        });
+            var btn = form.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
+          });
+        }
+
+        document.querySelectorAll(".search-form").forEach(wireFormSubmit);
       })();
     </script>
   </body>
