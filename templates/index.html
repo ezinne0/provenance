@@ -197,7 +197,7 @@
               </div>
               <a
                 class="phia-cta"
-                href="https://phia.com/brands/{{ brand | lower | replace(' ', '-') }}"
+                href="https://phia.com/brands/{{ brand | lower | replace('\'', '') | replace(' ', '-') }}"
                 target="_blank"
                 rel="noopener noreferrer"
                 >Find it cheaper →</a>
