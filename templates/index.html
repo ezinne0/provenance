@@ -69,6 +69,38 @@
       <article class="report" aria-label="Analysis results">
         {% set nh = (star_rating * 2)|round|int %}
         {% set star_path = "M12 1 L14.116 9.088 L22.462 8.601 L15.424 13.112 L18.466 20.899 L12 15.6 L5.534 20.899 L8.576 13.112 L1.538 8.601 L9.884 9.088 Z" %}
+
+        <div class="result-card">
+          <h2 class="section-label">You’re looking at</h2>
+          <dl class="product-meta">
+            <div class="product-meta__row">
+              <dt>Name</dt>
+              <dd>{{ product_name or "—" }}</dd>
+            </div>
+            <div class="product-meta__row">
+              <dt>Brand</dt>
+              <dd>{{ brand or "—" }}</dd>
+            </div>
+            <div class="product-meta__row">
+              <dt>Category</dt>
+              <dd>{{ category or "—" }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        {% if product_image %}
+        <div class="result-card result-card--product-image">
+          <img
+            class="product-image"
+            src="{{ product_image }}"
+            alt="{{ product_name }} — {{ brand }}"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+          />
+        </div>
+        {% endif %}
+
         <div class="result-card result-card--stars">
           <div
             class="star-rating-visual"
@@ -104,37 +136,6 @@
             {% endfor %}
           </div>
         </div>
-
-        <div class="result-card">
-          <h2 class="section-label">You’re looking at</h2>
-          <dl class="product-meta">
-            <div class="product-meta__row">
-              <dt>Name</dt>
-              <dd>{{ product_name or "—" }}</dd>
-            </div>
-            <div class="product-meta__row">
-              <dt>Brand</dt>
-              <dd>{{ brand or "—" }}</dd>
-            </div>
-            <div class="product-meta__row">
-              <dt>Category</dt>
-              <dd>{{ category or "—" }}</dd>
-            </div>
-          </dl>
-        </div>
-
-        {% if product_image %}
-        <div class="result-card result-card--product-image">
-          <img
-            class="product-image"
-            src="{{ product_image }}"
-            alt="{{ product_name }} — {{ brand }}"
-            loading="lazy"
-            decoding="async"
-            referrerpolicy="no-referrer"
-          />
-        </div>
-        {% endif %}
 
         <div class="result-card">
           <h2 class="section-label">What people are saying</h2>
