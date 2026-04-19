@@ -301,6 +301,95 @@ body {
   color: var(--color-text);
 }
 
+.result-card--stars {
+  padding: 1.75rem 1.25rem 2rem;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 223, 0, 0.04) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+}
+
+.star-rating-visual {
+  --star-gold: #ffdf00;
+  --star-gold-dim: rgba(255, 223, 0, 0.26);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.18em;
+  font-size: clamp(1.9rem, 5.5vw, 2.45rem);
+  line-height: 0;
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.55));
+}
+
+.star-rating-visual .star {
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;
+}
+
+.star-svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+  overflow: visible;
+}
+
+.star-svg__fill {
+  stroke: none;
+}
+
+.star-svg__stroke {
+  fill: none;
+  stroke: var(--star-gold-dim);
+  stroke-width: 1.2;
+  stroke-linejoin: miter;
+  stroke-linecap: butt;
+}
+
+.star--full .star-svg__fill,
+.star__half-clip .star-svg__fill {
+  fill: var(--star-gold);
+}
+
+.star--empty .star-svg__stroke {
+  stroke: var(--star-gold-dim);
+}
+
+.star--half {
+  position: relative;
+  display: inline-block;
+}
+
+.star--half .star-svg--outline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.star--half .star-svg__stroke {
+  stroke: var(--star-gold-dim);
+}
+
+.star__half-clip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.star__half-clip .star-svg {
+  width: 1em;
+  height: 1em;
+  min-width: 1em;
+}
+
 /* —— Prose —— */
 .prose {
   margin: 0;

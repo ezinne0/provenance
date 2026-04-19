@@ -61,6 +61,7 @@ def analyze():
         "summary": synth["summary"],
         "durability": synth["durability"],
         "keywords": synth["keywords"],
+        "star_rating": synth["star_rating"],
         "submitted_url": url,
     }
     return redirect(url_for("index"), code=303)

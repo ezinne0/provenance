@@ -179,11 +179,22 @@ def _normalize_keyword_list(raw: Any) -> list[str]:
         out.append("unknown")
     return out[:5]
 
+
+def _normalize_star_rating(raw: Any) -> float:
+    """Clamp to [1.0, 5.0] and round to nearest 0.5."""
+    try:
+        x = float(raw)
+    except (TypeError, ValueError):
+        x = 3.0
+    x = max(1.0, min(5.0, x))
+    return round(x * 2) / 2
+
+
 # Helper function to synthesize the review text
 def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any]:
     """
     Send aggregated review text to Claude and return a dict with ``summary``,
-    ``durability``, and ``keywords`` (5 items).
+    ``durability``, ``keywords`` (5 items), and ``star_rating`` (1.0–5.0 in 0.5 steps).
     """
     api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
     if not api_key:
@@ -201,12 +212,15 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
     system = (
         "You synthesize shopper-relevant insights from aggregated web search snippets about a product. "
         "Respond with a single JSON object only — no markdown, no code fences, no explanation or text outside the JSON. "
-        "Exactly these three keys:\n"
+        "Exactly these four keys:\n"
         '- "summary": string, 2-3 sentences on overall sentiment from the review text.\n'
         '- "durability": string, 1-2 sentences on how the product holds up over time (wear, materials, construction).\n'
         '- "keywords": array of exactly 5 strings — concrete descriptor words people use (e.g. soft, creasing, bulky). '
         "No common stop words (the, and, very, good, bad as filler alone).\n"
-        "If evidence is thin, say so in summary."
+        '- "star_rating": number (float) between 1.0 and 5.0 inclusive, rounded to the nearest 0.5, '
+        "representing overall sentiment implied by the snippets (1 = very negative, 5 = very positive). "
+        "Use values like 3.5 or 4.0 only — step by 0.5.\n"
+        "If evidence is thin, say so in summary and lean toward a middling star_rating (around 3.0)."
     )
     user = (
         f"Product name: {pn}\n"
@@ -233,6 +247,7 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
         "summary": str(data.get("summary", "")).strip(),
         "durability": str(data.get("durability", "")).strip(),
         "keywords": _normalize_keyword_list(data.get("keywords")),
+        "star_rating": _normalize_star_rating(data.get("star_rating")),
     }
 
 
