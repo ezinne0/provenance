@@ -121,43 +121,44 @@
             role="group"
             aria-label="Words that keep coming up"
           >
-            {% if keywords %}
-            <ul
-              class="keyword-orbit"
-              style="--orbit-count: {{ keywords|length }}"
-            >
-              {% for kw in keywords %}
-              <li
-                class="keyword-orbit__tag"
-                style="--orbit-i: {{ loop.index0 }}"
-              >
-                <button type="button" class="keyword-orbit__inner">{{ kw }}</button>
-              </li>
-              {% endfor %}
-            </ul>
-            {% endif %}
-
             <div class="product-showcase__stack">
-              {% if product_image %}
-              <img
-                class="product-image product-showcase__image"
-                src="{{ product_image }}"
-                alt="{{ product_name }} — {{ brand }}"
-                loading="lazy"
-                decoding="async"
-                referrerpolicy="no-referrer"
-              />
-              {% else %}
-              <div
-                class="product-showcase__placeholder"
-                role="img"
-                aria-label="{{ product_name or 'Product' }}"
-              >
-                <span class="product-showcase__mono" aria-hidden="true"
-                  >{{ mono_ch | upper }}</span
+              <div class="product-showcase__media">
+                {% if product_image %}
+                <img
+                  class="product-image product-showcase__image"
+                  src="{{ product_image }}"
+                  alt="{{ product_name }} — {{ brand }}"
+                  loading="lazy"
+                  decoding="async"
+                  referrerpolicy="no-referrer"
+                />
+                {% else %}
+                <div
+                  class="product-showcase__placeholder"
+                  role="img"
+                  aria-label="{{ product_name or 'Product' }}"
                 >
+                  <span class="product-showcase__mono" aria-hidden="true"
+                    >{{ mono_ch | upper }}</span
+                  >
+                </div>
+                {% endif %}
+                {% if keywords %}
+                <ul
+                  class="keyword-orbit"
+                  style="--orbit-count: {{ keywords|length }}"
+                >
+                  {% for kw in keywords %}
+                  <li
+                    class="keyword-orbit__tag"
+                    style="--orbit-i: {{ loop.index0 }}"
+                  >
+                    <button type="button" class="keyword-orbit__inner">{{ kw }}</button>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
               </div>
-              {% endif %}
 
               <div class="product-showcase__stars">
                 <div
@@ -194,6 +195,12 @@
                   {% endfor %}
                 </div>
               </div>
+              <a
+                class="phia-cta"
+                href="https://phia.com/brands/{{ brand | lower | replace(' ', '-') }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Find it cheaper →</a>
             </div>
           </div>
         </div>
