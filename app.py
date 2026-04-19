@@ -58,10 +58,11 @@ def analyze():
         "brand": product["brand"],
         "category": product["category"],
         "product_image": product_image,
-        "summary": synth["summary"],
-        "durability": synth["durability"],
-        "keywords": synth["keywords"],
         "star_rating": synth["star_rating"],
+        "fit": synth["fit"],
+        "durability": synth["durability"],
+        "quality": synth["quality"],
+        "keywords": synth["keywords"],
         "submitted_url": url,
     }
     return redirect(url_for("index"), code=303)

@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div class="page{% if summary is not defined %} page--landing{% endif %}">
+    <div class="page{% if star_rating is not defined %} page--landing{% endif %}">
       <header class="masthead">
         <h1 class="logo">Provenance</h1>
         <p class="masthead__title">
@@ -43,14 +43,14 @@
       </header>
 
       <section
-        class="search-panel{% if summary is defined %} search-panel--after-results{% endif %}"
+        class="search-panel{% if star_rating is defined %} search-panel--after-results{% endif %}"
         aria-label="Analyze a product URL"
       >
         {% if error_message %}
         <p class="banner banner--error" role="alert">{{ error_message }}</p>
         {% endif %}
 
-        {% if summary is defined %}
+        {% if star_rating is defined %}
         <form
           class="search-form search-form--compact"
           method="post"
@@ -91,7 +91,7 @@
         {% endif %}
       </section>
 
-      {% if summary is defined %}
+      {% if star_rating is defined %}
       <article class="report" aria-label="Analysis results">
         {% set nh = (star_rating * 2)|round|int %}
         {% set star_path = "M12 1 L14.116 9.088 L22.462 8.601 L15.424 13.112 L18.466 20.899 L12 15.6 L5.534 20.899 L8.576 13.112 L1.538 8.601 L9.884 9.088 Z" %}
@@ -198,15 +198,24 @@
           </div>
         </div>
 
-        <div class="result-card">
-          <h2 class="section-label">What people are saying</h2>
-          <div class="prose">{{ summary }}</div>
-        </div>
-
-        <div class="result-card">
-          <h2 class="section-label">Does it last?</h2>
-          <div class="prose">{{ durability }}</div>
-        </div>
+        <section class="insights" aria-label="Fit, durability, and quality">
+          <header class="insights__header">
+            <p class="insights__intro">According to other shoppers…</p>
+            <p class="insights__note">Based on reviews · Summarized with AI</p>
+          </header>
+          <article class="insight-card">
+            <h2 class="insight-card__label">Fit</h2>
+            <p class="insight-card__text">{{ fit or "—" }}</p>
+          </article>
+          <article class="insight-card">
+            <h2 class="insight-card__label">Durability</h2>
+            <p class="insight-card__text">{{ durability or "—" }}</p>
+          </article>
+          <article class="insight-card">
+            <h2 class="insight-card__label">Quality</h2>
+            <p class="insight-card__text">{{ quality or "—" }}</p>
+          </article>
+        </section>
       </article>
       {% endif %}
     </div>

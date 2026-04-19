@@ -193,8 +193,8 @@ def _normalize_star_rating(raw: Any) -> float:
 # Helper function to synthesize the review text
 def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any]:
     """
-    Send aggregated review text to Claude and return a dict with ``summary``,
-    ``durability``, ``keywords`` (5 items), and ``star_rating`` (1.0–5.0 in 0.5 steps).
+    Send aggregated review text to Claude and return ``star_rating``, ``fit``,
+    ``durability``, ``quality``, and ``keywords`` (5 items).
     """
     api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
     if not api_key:
@@ -212,15 +212,16 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
     system = (
         "You synthesize shopper-relevant insights from aggregated web search snippets about a product. "
         "Respond with a single JSON object only — no markdown, no code fences, no explanation or text outside the JSON. "
-        "Exactly these four keys:\n"
-        '- "summary": string, 2-3 sentences on overall sentiment from the review text.\n'
-        '- "durability": string, 1-2 sentences on how the product holds up over time (wear, materials, construction).\n'
-        '- "keywords": array of exactly 5 strings — concrete descriptor words people use (e.g. soft, creasing, bulky). '
-        "No common stop words (the, and, very, good, bad as filler alone).\n"
+        "Exactly these five keys:\n"
         '- "star_rating": number (float) between 1.0 and 5.0 inclusive, rounded to the nearest 0.5, '
         "representing overall sentiment implied by the snippets (1 = very negative, 5 = very positive). "
         "Use values like 3.5 or 4.0 only — step by 0.5.\n"
-        "If evidence is thin, say so in summary and lean toward a middling star_rating (around 3.0)."
+        '- "fit": string, exactly one sentence on sizing, cut, comfort, and how it wears.\n'
+        '- "durability": string, exactly one sentence on longevity — wear, materials, construction.\n'
+        '- "quality": string, exactly one sentence on build quality, finish, materials, or defects.\n'
+        '- "keywords": array of exactly 5 strings — concrete descriptor words people use (e.g. soft, creasing, bulky). '
+        "No common stop words (the, and, very, good, bad as filler alone).\n"
+        "If evidence is thin, say so briefly in the relevant string fields and lean toward a middling star_rating (around 3.0)."
     )
     user = (
         f"Product name: {pn}\n"
@@ -244,10 +245,11 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
     data = _parse_assistant_json(text)
 
     return {
-        "summary": str(data.get("summary", "")).strip(),
-        "durability": str(data.get("durability", "")).strip(),
-        "keywords": _normalize_keyword_list(data.get("keywords")),
         "star_rating": _normalize_star_rating(data.get("star_rating")),
+        "fit": str(data.get("fit", "")).strip(),
+        "durability": str(data.get("durability", "")).strip(),
+        "quality": str(data.get("quality", "")).strip(),
+        "keywords": _normalize_keyword_list(data.get("keywords")),
     }
 
 
