@@ -85,6 +85,19 @@
           </dl>
         </div>
 
+        {% if product_image %}
+        <div class="result-card result-card--product-image">
+          <img
+            class="product-image"
+            src="{{ product_image }}"
+            alt="{{ product_name }} — {{ brand }}"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+          />
+        </div>
+        {% endif %}
+
         <div class="result-card">
           <h2 class="section-label">What people are saying</h2>
           <div class="prose">{{ summary }}</div>

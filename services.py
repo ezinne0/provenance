@@ -117,6 +117,52 @@ def get_reviews(product_name: str, brand: str) -> str:
 
     return "\n".join(snippets)
 
+
+def get_product_image(product_name: str, brand: str) -> str:
+    """
+    Search Google Images via SerpAPI for ``{brand} {product_name}`` and return
+    the ``original`` URL of the first image result.
+    """
+    api_key = (os.getenv("SERP_API_KEY") or "").strip()
+    if not api_key:
+        raise ValueError("SERP_API_KEY is not set.")
+
+    pn = (product_name or "").strip()
+    br = (brand or "").strip()
+    q = f"{br} {pn}".strip()
+    if not q:
+        raise ValueError("product_name and brand cannot both be empty.")
+
+    resp = requests.get(
+        "https://serpapi.com/search",
+        params={
+            "q": q,
+            "api_key": api_key,
+            "engine": "google_images",
+            "num": 1,
+        },
+        timeout=30,
+    )
+    resp.raise_for_status()
+    payload = resp.json()
+    if payload.get("error"):
+        raise ValueError(str(payload["error"]))
+
+    images = payload.get("images_results") or []
+    if not images:
+        raise ValueError("No image results returned for this product.")
+
+    first = images[0]
+    if not isinstance(first, dict):
+        raise ValueError("Unexpected image result format.")
+
+    original = (first.get("original") or "").strip()
+    if not original:
+        raise ValueError("First image result had no original URL.")
+
+    return original
+
+
 # Helper function to normalize the keyword list
 def _normalize_keyword_list(raw: Any) -> list[str]:
     if not isinstance(raw, list):
@@ -190,15 +236,15 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
     }
 
 
-# Testing get_product_name() function with a list of URLs
-if __name__ == "__main__":
-    urls = [
-        "https://www.zara.com/us/en/regular-fit-textured-weave-suit-pT9960345005.html?v1=539928691",
-        "https://www.depop.com/products/merchoutlet08-brand-new-air-force-one-d8f6/",
-        "https://poshmark.com/listing/Levis-80s-Mom-Shorts-69e2720424d2e76a97493d38"
-    ]
-    for url in urls:
-        print(get_product_name(url))
+# # Testing get_product_name() function with a list of URLs
+# if __name__ == "__main__":
+#     urls = [
+#         "https://www.zara.com/us/en/regular-fit-textured-weave-suit-pT9960345005.html?v1=539928691",
+#         "https://www.depop.com/products/merchoutlet08-brand-new-air-force-one-d8f6/",
+#         "https://poshmark.com/listing/Levis-80s-Mom-Shorts-69e2720424d2e76a97493d38"
+#     ]
+#     for url in urls:
+#         print(get_product_name(url))
 
 # Testing get_reviews() function with a list of product names and brands
 # if __name__ == "__main__":
@@ -216,15 +262,19 @@ if __name__ == "__main__":
 #         print(get_reviews(product_name, brand))
 
 # Testing synthesize() function with a list of fake reviews
+# if __name__ == "__main__":
+#     fake_reviews = """
+#     The Nike Air Force 1 fits true to size but runs large. 
+#     Creases badly after a few wears especially at the toe box.
+#     Durable leather upper holds up well over time but the sole can yellow.
+#     Comfortable for casual wear but not for long walks.
+#     Bulky silhouette, iconic design, pairs well with everything.
+#     Some users report the laces fray quickly.
+#     Great value for the price, very versatile shoe.
+#     """
+#     result = synthesize(fake_reviews, "Air Force 1", "Nike")
+#     print(result)
+
 if __name__ == "__main__":
-    fake_reviews = """
-    The Nike Air Force 1 fits true to size but runs large. 
-    Creases badly after a few wears especially at the toe box.
-    Durable leather upper holds up well over time but the sole can yellow.
-    Comfortable for casual wear but not for long walks.
-    Bulky silhouette, iconic design, pairs well with everything.
-    Some users report the laces fray quickly.
-    Great value for the price, very versatile shoe.
-    """
-    result = synthesize(fake_reviews, "Air Force 1", "Nike")
+    result = get_product_image("Air Force 1", "Nike")
     print(result)

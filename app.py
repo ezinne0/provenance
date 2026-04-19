@@ -6,14 +6,13 @@ load_dotenv()
 
 from flask import Flask, redirect, render_template, request, session, url_for
 
-from services import get_product_name, get_reviews, synthesize
+from services import get_product_image, get_product_name, get_reviews, synthesize
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-insecure-change-for-production")
 
 # One-time payload after POST /analyze so GET / can show results once; reload clears session.
 _SESSION_VIEW_KEY = "_provenance_view"
-
 
 @app.route("/")
 def index():
@@ -32,6 +31,12 @@ def analyze():
 
     try:
         product = get_product_name(url)
+        try:
+            product_image = get_product_image(
+                product["product_name"], product["brand"]
+            )
+        except ValueError:
+            product_image = None
         review_text = get_reviews(product["product_name"], product["brand"])
         synth = synthesize(review_text, product["product_name"], product["brand"])
     except ValueError as e:
@@ -52,6 +57,7 @@ def analyze():
         "product_name": product["product_name"],
         "brand": product["brand"],
         "category": product["category"],
+        "product_image": product_image,
         "summary": synth["summary"],
         "durability": synth["durability"],
         "keywords": synth["keywords"],

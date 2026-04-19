@@ -245,6 +245,24 @@ body {
   border-radius: 6px;
 }
 
+.result-card--product-image {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-image {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  vertical-align: middle;
+}
+
 .section-label {
   margin: 0 0 0.85rem;
   font-family: var(--font-sans);
