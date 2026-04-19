@@ -6,7 +6,13 @@ load_dotenv()
 
 from flask import Flask, redirect, render_template, request, session, url_for
 
-from services import get_product_image, get_product_name, get_reviews, synthesize
+from services import (
+    get_product_image,
+    get_product_name,
+    get_reviews,
+    get_similar_items,
+    synthesize,
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-insecure-change-for-production")
@@ -37,6 +43,13 @@ def analyze():
             )
         except ValueError:
             product_image = None
+        try:
+            similar_items = get_similar_items(
+                product["product_name"], product["brand"], product["category"]
+            )
+        except Exception:
+            app.logger.exception("get_similar_items failed")
+            similar_items = []
         review_text = get_reviews(product["product_name"], product["brand"])
         synth = synthesize(review_text, product["product_name"], product["brand"])
     except ValueError as e:
@@ -58,6 +71,7 @@ def analyze():
         "brand": product["brand"],
         "category": product["category"],
         "product_image": product_image,
+        "similar_items": similar_items,
         "star_rating": synth["star_rating"],
         "fit": synth["fit"],
         "durability": synth["durability"],

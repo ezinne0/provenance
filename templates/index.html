@@ -223,6 +223,55 @@
             <p class="insight-card__text">{{ quality or "—" }}</p>
           </article>
         </section>
+
+        {% if similar_items is defined and similar_items|length > 0 %}
+        <section class="similar-items" aria-label="You might also consider">
+          <h2 class="similar-items__heading section-label">You might also consider</h2>
+          <div class="similar-items__row">
+            {% for item in similar_items[:3] %}
+            {% set sim_nh = ((item.star_rating | default(3.0)) * 2)|round|int %}
+            <article class="similar-items__card">
+              <p class="similar-items__brand">{{ item.brand or "—" }}</p>
+              <p class="similar-items__name">{{ item.product_name or "—" }}</p>
+              <div
+                class="star-rating-visual similar-items__stars"
+                role="img"
+                aria-label="{{ item.star_rating }} out of 5 stars"
+              >
+                {% for i in [0, 1, 2, 3, 4] %}
+                  {% set rem = sim_nh - (i * 2) %}
+                  {% if rem >= 2 %}
+                  <span class="star star--full" aria-hidden="true">
+                    <svg class="star-svg" viewBox="0 0 24 24" focusable="false">
+                      <path class="star-svg__fill" d="{{ star_path }}" />
+                    </svg>
+                  </span>
+                  {% elif rem >= 1 %}
+                  <span class="star star--half" aria-hidden="true">
+                    <svg class="star-svg star-svg--outline" viewBox="0 0 24 24" focusable="false">
+                      <path class="star-svg__stroke" d="{{ star_path }}" />
+                    </svg>
+                    <span class="star__half-clip">
+                      <svg class="star-svg" viewBox="0 0 24 24" focusable="false">
+                        <path class="star-svg__fill" d="{{ star_path }}" />
+                      </svg>
+                    </span>
+                  </span>
+                  {% else %}
+                  <span class="star star--empty" aria-hidden="true">
+                    <svg class="star-svg star-svg--outline" viewBox="0 0 24 24" focusable="false">
+                      <path class="star-svg__stroke" d="{{ star_path }}" />
+                    </svg>
+                  </span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <p class="similar-items__liner">{{ item.one_liner or "—" }}</p>
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
       </article>
       {% endif %}
     </div>

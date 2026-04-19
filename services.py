@@ -34,6 +34,20 @@ def _parse_assistant_json(text: str) -> dict[str, Any]:
     return data
 
 
+def _parse_assistant_json_array(text: str) -> list[Any]:
+    raw = text.strip()
+    if raw.startswith("```"):
+        lines = raw.split("\n")
+        lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        raw = "\n".join(lines)
+    data = json.loads(raw)
+    if not isinstance(data, list):
+        raise ValueError("Model did not return a JSON array.")
+    return data
+
+
 def get_product_name(url: str) -> dict[str, str]:
     """
     Send only the URL to Claude and ask it to infer ``product_name``, ``brand``,
@@ -251,6 +265,87 @@ def synthesize(review_text: str, product_name: str, brand: str) -> dict[str, Any
         "quality": str(data.get("quality", "")).strip(),
         "keywords": _normalize_keyword_list(data.get("keywords")),
     }
+
+
+def _normalize_one_liner(raw: Any, max_chars: int = 220) -> str:
+    s = str(raw or "").strip()
+    if not s:
+        return ""
+    s = s.replace("\n", " ").strip()
+    for sep in (". ", "! ", "? "):
+        if sep in s:
+            s = s.split(sep, 1)[0] + sep[0]
+            break
+    if len(s) > max_chars:
+        s = s[: max_chars - 1].rsplit(" ", 1)[0] + "…"
+    return s
+
+
+def _normalize_similar_item(raw: Any) -> dict[str, Any]:
+    if not isinstance(raw, dict):
+        raise ValueError("Each similar product must be a JSON object.")
+    return {
+        "product_name": str(raw.get("product_name", "")).strip(),
+        "brand": str(raw.get("brand", "")).strip(),
+        "star_rating": _normalize_star_rating(raw.get("star_rating")),
+        "one_liner": _normalize_one_liner(raw.get("one_liner")),
+    }
+
+
+def get_similar_items(product_name: str, brand: str, category: str) -> list[dict[str, Any]]:
+    """
+    Call Claude to suggest exactly three similar products.
+
+    Returns a list of three dicts with keys ``product_name``, ``brand``,
+    ``star_rating`` (1.0–5.0 step 0.5), and ``one_liner`` (one short sentence).
+    """
+    api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY is not set.")
+
+    pn = (product_name or "").strip()
+    br = (brand or "").strip()
+    cat = (category or "").strip()
+    if not pn and not br and not cat:
+        raise ValueError("At least one of product_name, brand, or category is required.")
+
+    model = (os.getenv("ANTHROPIC_MODEL") or _DEFAULT_MODEL).strip() or _DEFAULT_MODEL
+    client = Anthropic(api_key=api_key)
+    system = (
+        "You recommend similar retail products a shopper might compare to the reference item. "
+        "Output must be a single JSON array and nothing else — no markdown, no code fences, "
+        "no commentary before or after the array. "
+        "The array must contain exactly 3 elements. Each element is one JSON object with exactly these keys:\n"
+        '- "product_name" (string)\n'
+        '- "brand" (string)\n'
+        '- "star_rating" (number): a plausible overall rating between 1.0 and 5.0 inclusive, '
+        "rounded to the nearest 0.5 only (e.g. 4.0, 3.5, 2.0).\n"
+        '- "one_liner" (string): at most one sentence on why it is a sensible alternative or what it is known for.\n'
+        "Use realistic product names and brands when possible; ratings are illustrative."
+    )
+    user = (
+        f"Reference product_name: {pn}\n"
+        f"Reference brand: {br}\n"
+        f"Category: {cat}\n"
+    )
+
+    msg = client.messages.create(
+        model=model,
+        max_tokens=1024,
+        temperature=0,
+        system=system,
+        messages=[{"role": "user", "content": user}],
+    )
+    text = ""
+    for block in msg.content:
+        if hasattr(block, "text"):
+            text += block.text
+
+    items = _parse_assistant_json_array(text)
+    if len(items) < 3:
+        raise ValueError(f"Expected 3 similar products, got {len(items)}.")
+    normalized = [_normalize_similar_item(x) for x in items[:3]]
+    return normalized
 
 
 # # Testing get_product_name() function with a list of URLs

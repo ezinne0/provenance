@@ -358,6 +358,102 @@ body {
   color: rgba(255, 255, 255, 0.92);
 }
 
+/* Similar picks — compact cards, document flow */
+.similar-items {
+  margin: clamp(1.25rem, 4vw, 2rem) 0 0;
+  padding: 0;
+}
+
+.similar-items__heading {
+  margin: 0 0 0.85rem;
+}
+
+.similar-items__row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.similar-items__card {
+  box-sizing: border-box;
+  width: 160px;
+  min-width: 160px;
+  max-width: 160px;
+  flex: 0 0 160px;
+  margin: 0;
+  padding: 0.65rem 0.5rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  overflow: hidden;
+  background: rgba(5, 8, 22, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+}
+
+.similar-items__brand {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.similar-items__name {
+  margin: 0;
+  min-height: 0;
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--color-text);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  word-break: break-word;
+}
+
+.similar-items__stars.star-rating-visual {
+  justify-content: flex-start;
+  font-size: 0.9rem;
+}
+
+.similar-items__stars.star-rating-visual .star {
+  filter:
+    drop-shadow(0 0 1px rgba(255, 252, 220, 0.75))
+    drop-shadow(0 0 3px rgba(255, 228, 80, 0.55))
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+}
+
+.similar-items__liner {
+  margin: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-text-soft);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  word-break: break-word;
+}
+
 .result-card {
   padding: 1.35rem 1.5rem;
   background: var(--card-bg);
