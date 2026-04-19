@@ -70,6 +70,25 @@ body {
   padding: clamp(2.5rem, 8vw, 4rem) clamp(1.25rem, 5vw, 2rem) 4rem;
 }
 
+/* OG landing: hero + search centered in the viewport */
+.page--landing {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(1.25rem, 4vw, 2rem) clamp(1.25rem, 5vw, 2rem);
+}
+
+.page--landing .masthead {
+  padding-bottom: clamp(1.35rem, 4vw, 2.25rem);
+}
+
+.page--landing .search-panel {
+  padding: clamp(1.25rem, 4vw, 2rem) 0 clamp(0.5rem, 2vw, 1rem);
+}
+
 /* —— Masthead —— */
 .masthead {
   text-align: center;
