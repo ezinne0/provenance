@@ -285,13 +285,6 @@ body {
   border-radius: 6px;
 }
 
-.result-card--product-image {
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .product-image {
   display: block;
   margin: 0 auto;
@@ -301,6 +294,166 @@ body {
   object-fit: cover;
   border-radius: 12px;
   vertical-align: middle;
+}
+
+/* Product + stars with orbital keywords */
+.result-card--showcase {
+  padding: clamp(1.35rem, 4.5vw, 2rem) clamp(1rem, 3vw, 1.35rem);
+  overflow: visible;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 223, 0, 0.06) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+}
+
+.product-showcase {
+  --orbit-r: min(40vw, 10.75rem);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(16.5rem, 50vw, 21rem);
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+}
+
+@media (min-width: 28rem) {
+  .product-showcase {
+    --orbit-r: min(38vw, 11.75rem);
+  }
+}
+
+.product-showcase__stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  pointer-events: auto;
+}
+
+.product-showcase__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(5, 8, 30, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.product-showcase__mono {
+  font-family: var(--font-serif);
+  font-size: clamp(2.75rem, 11vw, 4.25rem);
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+.product-showcase__stars {
+  padding: 0 0.25rem;
+}
+
+.keyword-orbit {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.keyword-orbit__tag {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%)
+    rotate(calc(360deg / var(--orbit-count, 5) * var(--orbit-i, 0) - 90deg))
+    translateY(calc(-1 * var(--orbit-r)))
+    rotate(calc(-360deg / var(--orbit-count, 5) * var(--orbit-i, 0) + 90deg));
+}
+
+.keyword-orbit__inner {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0.42rem 0.82rem;
+  max-width: min(10rem, 42vw);
+  overflow: hidden;
+  font-family: var(--font-sans);
+  font-size: clamp(0.68rem, 2.6vw, 0.78rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  pointer-events: auto;
+  background: rgba(6, 10, 38, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    filter 0.35s ease;
+  transform: translateX(-50%);
+  animation: keyword-orbit-drift 5s ease-in-out infinite;
+  animation-delay: calc(var(--orbit-i, 0) * 0.48s);
+}
+
+.keyword-orbit__tag:hover {
+  z-index: 5;
+}
+
+.keyword-orbit__inner:hover,
+.keyword-orbit__inner:focus-visible {
+  outline: none;
+  animation-play-state: paused;
+  transform: translateX(-50%) translate3d(0, -6px, 0) scale(1.08);
+  border-color: rgba(139, 159, 232, 0.95);
+  box-shadow:
+    0 0 26px rgba(139, 159, 232, 0.55),
+    0 0 48px rgba(139, 159, 232, 0.28),
+    0 12px 28px rgba(0, 0, 0, 0.45);
+  filter: brightness(1.08);
+}
+
+@keyframes keyword-orbit-drift {
+  0%,
+  100% {
+    transform: translateX(-50%) translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translateX(-50%) translate3d(4px, -5px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .keyword-orbit__inner {
+    animation: none;
+  }
+
+  .keyword-orbit__inner:hover,
+  .keyword-orbit__inner:focus-visible {
+    transform: translateX(-50%) scale(1.05);
+  }
 }
 
 .section-label {
@@ -339,15 +492,6 @@ body {
 .product-meta__row dd {
   margin: 0;
   color: var(--color-text);
-}
-
-.result-card--stars {
-  padding: 1.75rem 1.25rem 2rem;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 223, 0, 0.04) 0%,
-    rgba(255, 255, 255, 0.03) 100%
-  );
 }
 
 .star-rating-visual {
@@ -440,31 +584,6 @@ body {
   color: var(--color-text);
   white-space: pre-wrap;
   word-wrap: break-word;
-}
-
-/* —— Keyword pills —— */
-.keyword-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.keyword-tags__pill {
-  display: inline-block;
-  padding: 0.45rem 0.9rem;
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--color-text);
-  background: transparent;
-  border: 1px solid #1a2338;
-  border-radius: 999px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 @media (max-width: 32rem) {

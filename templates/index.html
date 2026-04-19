@@ -95,6 +95,7 @@
       <article class="report" aria-label="Analysis results">
         {% set nh = (star_rating * 2)|round|int %}
         {% set star_path = "M12 1 L14.116 9.088 L22.462 8.601 L15.424 13.112 L18.466 20.899 L12 15.6 L5.534 20.899 L8.576 13.112 L1.538 8.601 L9.884 9.088 Z" %}
+        {% set mono_ch = (brand[0] if brand else (product_name[0] if product_name else "?")) %}
 
         <div class="result-card">
           <h2 class="section-label">You’re looking at</h2>
@@ -114,52 +115,86 @@
           </dl>
         </div>
 
-        {% if product_image %}
-        <div class="result-card result-card--product-image">
-          <img
-            class="product-image"
-            src="{{ product_image }}"
-            alt="{{ product_name }} — {{ brand }}"
-            loading="lazy"
-            decoding="async"
-            referrerpolicy="no-referrer"
-          />
-        </div>
-        {% endif %}
-
-        <div class="result-card result-card--stars">
+        <div class="result-card result-card--showcase">
           <div
-            class="star-rating-visual"
-            role="img"
-            aria-label="{{ star_rating }} out of 5 stars"
+            class="product-showcase"
+            role="group"
+            aria-label="Words that keep coming up"
           >
-            {% for i in [0, 1, 2, 3, 4] %}
-              {% set rem = nh - (i * 2) %}
-              {% if rem >= 2 %}
-              <span class="star star--full" aria-hidden="true">
-                <svg class="star-svg" viewBox="0 0 24 24" focusable="false">
-                  <path class="star-svg__fill" d="{{ star_path }}" />
-                </svg>
-              </span>
-              {% elif rem >= 1 %}
-              <span class="star star--half" aria-hidden="true">
-                <svg class="star-svg star-svg--outline" viewBox="0 0 24 24" focusable="false">
-                  <path class="star-svg__stroke" d="{{ star_path }}" />
-                </svg>
-                <span class="star__half-clip">
-                  <svg class="star-svg" viewBox="0 0 24 24" focusable="false">
-                    <path class="star-svg__fill" d="{{ star_path }}" />
-                  </svg>
-                </span>
-              </span>
+            {% if keywords %}
+            <ul
+              class="keyword-orbit"
+              style="--orbit-count: {{ keywords|length }}"
+            >
+              {% for kw in keywords %}
+              <li
+                class="keyword-orbit__tag"
+                style="--orbit-i: {{ loop.index0 }}"
+              >
+                <button type="button" class="keyword-orbit__inner">{{ kw }}</button>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="product-showcase__stack">
+              {% if product_image %}
+              <img
+                class="product-image product-showcase__image"
+                src="{{ product_image }}"
+                alt="{{ product_name }} — {{ brand }}"
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
+              />
               {% else %}
-              <span class="star star--empty" aria-hidden="true">
-                <svg class="star-svg star-svg--outline" viewBox="0 0 24 24" focusable="false">
-                  <path class="star-svg__stroke" d="{{ star_path }}" />
-                </svg>
-              </span>
+              <div
+                class="product-showcase__placeholder"
+                role="img"
+                aria-label="{{ product_name or 'Product' }}"
+              >
+                <span class="product-showcase__mono" aria-hidden="true"
+                  >{{ mono_ch | upper }}</span
+                >
+              </div>
               {% endif %}
-            {% endfor %}
+
+              <div class="product-showcase__stars">
+                <div
+                  class="star-rating-visual"
+                  role="img"
+                  aria-label="{{ star_rating }} out of 5 stars"
+                >
+                  {% for i in [0, 1, 2, 3, 4] %}
+                    {% set rem = nh - (i * 2) %}
+                    {% if rem >= 2 %}
+                    <span class="star star--full" aria-hidden="true">
+                      <svg class="star-svg" viewBox="0 0 24 24" focusable="false">
+                        <path class="star-svg__fill" d="{{ star_path }}" />
+                      </svg>
+                    </span>
+                    {% elif rem >= 1 %}
+                    <span class="star star--half" aria-hidden="true">
+                      <svg class="star-svg star-svg--outline" viewBox="0 0 24 24" focusable="false">
+                        <path class="star-svg__stroke" d="{{ star_path }}" />
+                      </svg>
+                      <span class="star__half-clip">
+                        <svg class="star-svg" viewBox="0 0 24 24" focusable="false">
+                          <path class="star-svg__fill" d="{{ star_path }}" />
+                        </svg>
+                      </span>
+                    </span>
+                    {% else %}
+                    <span class="star star--empty" aria-hidden="true">
+                      <svg class="star-svg star-svg--outline" viewBox="0 0 24 24" focusable="false">
+                        <path class="star-svg__stroke" d="{{ star_path }}" />
+                      </svg>
+                    </span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -171,15 +206,6 @@
         <div class="result-card">
           <h2 class="section-label">Does it last?</h2>
           <div class="prose">{{ durability }}</div>
-        </div>
-
-        <div class="result-card">
-          <h2 class="section-label">Words that keep coming up</h2>
-          <ul class="keyword-tags" aria-label="Descriptive keywords">
-            {% for kw in keywords %}
-            <li class="keyword-tags__pill">{{ kw }}</li>
-            {% endfor %}
-          </ul>
         </div>
       </article>
       {% endif %}
